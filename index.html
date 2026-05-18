@@ -884,25 +884,27 @@
             const galleryContainer = document.getElementById('gallery-container');
             let photos = [];
 
-            // Primero intentar cargar fotos guardadas en localStorage
+            // Imágenes por defecto
+            const defaultPhotos = [
+                { title: 'Fotografía Documental', image: './images/foto1.jpg', alt: 'Fotografía Documental - Santiago Ares', date: '2024-05-18' },
+                { title: 'Fotografía Escénica', image: './images/foto2.jpg', alt: 'Fotografía Escénica - Santiago Ares', date: '2024-05-17' },
+                { title: 'Retrato Urbano', image: './images/foto3.jpg', alt: 'Retrato Urbano - Santiago Ares', date: '2024-05-16' },
+                { title: 'Fotografía de Eventos', image: './images/foto4.jpg', alt: 'Fotografía de Eventos - Santiago Ares', date: '2024-05-15' },
+                { title: 'Fotografía Artística', image: './images/foto5.jpg', alt: 'Fotografía Artística - Santiago Ares', date: '2024-05-14' },
+                { title: 'Fotografía de Paisaje', image: './images/foto6.jpg', alt: 'Fotografía de Paisaje - Santiago Ares', date: '2024-05-13' }
+            ];
+
+            // Agregar fotos por defecto
+            photos.push(...defaultPhotos);
+
+            // Intentar cargar fotos guardadas en localStorage y agregarlas al inicio
             try {
                 const savedPhotos = JSON.parse(localStorage.getItem('portfolio-photos') || '[]');
-                photos.push(...savedPhotos);
+                if (savedPhotos.length > 0) {
+                    photos = savedPhotos.concat(photos); // Nuevas fotos primero
+                }
             } catch (e) {
                 console.error('Error cargando fotos guardadas:', e);
-            }
-
-            // Si no hay fotos guardadas, usar imágenes por defecto
-            if (photos.length === 0) {
-                const defaultPhotos = [
-                    { title: 'Fotografía Documental', image: './images/foto1.jpg', alt: 'Fotografía Documental - Santiago Ares', date: '2024-05-18' },
-                    { title: 'Fotografía Escénica', image: './images/foto2.jpg', alt: 'Fotografía Escénica - Santiago Ares', date: '2024-05-17' },
-                    { title: 'Retrato Urbano', image: './images/foto3.jpg', alt: 'Retrato Urbano - Santiago Ares', date: '2024-05-16' },
-                    { title: 'Fotografía de Eventos', image: './images/foto4.jpg', alt: 'Fotografía de Eventos - Santiago Ares', date: '2024-05-15' },
-                    { title: 'Fotografía Artística', image: './images/foto5.jpg', alt: 'Fotografía Artística - Santiago Ares', date: '2024-05-14' },
-                    { title: 'Fotografía de Paisaje', image: './images/foto6.jpg', alt: 'Fotografía de Paisaje - Santiago Ares', date: '2024-05-13' }
-                ];
-                photos.push(...defaultPhotos);
             }
 
             // Ordenar por fecha descendente
