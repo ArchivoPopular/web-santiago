@@ -5,8 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Panel de Administración | Santiago Ares</title>
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+      }
+      .quick-add {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+      }
+      .quick-add a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #FF0000;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+        transition: all 0.25s ease;
+      }
+      .quick-add a:hover {
+        background: #cc0000;
+        box-shadow: 0 6px 16px rgba(255, 0, 0, 0.4);
+      }
+    </style>
   </head>
   <body>
     <div id="nc-root"></div>
+    <div class="quick-add">
+      <a href="agregar-foto.html">➕ Agregar Foto</a>
+    </div>
   </body>
 </html>

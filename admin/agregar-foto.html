@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Foto | Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #000000 0%, #202020 100%);
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #FF0000;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus,
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #FF0000;
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .preview {
+            margin-top: 1rem;
+            max-width: 100%;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.25s ease;
+        }
+
+        .btn-save {
+            background: #FF0000;
+            color: #fff;
+        }
+
+        .btn-save:hover {
+            background: #cc0000;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .message.error {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Agregar Nueva Foto</h1>
+        
+        <form id="photoForm">
+            <div class="form-group">
+                <label for="title">Título de la foto</label>
+                <input type="text" id="title" name="title" required placeholder="Ej: Retrato Urbano">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Descripción</label>
+                <textarea id="description" name="description" placeholder="Describe tu foto..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Fecha</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Imagen</label>
+                <input type="file" id="image" name="image" accept="image/*" required>
+                <img id="preview" class="preview" alt="Vista previa">
+            </div>
+
+            <div class="form-group">
+                <label for="alt">Texto alternativo (para SEO)</label>
+                <input type="text" id="alt" name="alt" placeholder="Ej: Fotografía de evento - Santiago Ares">
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-save">Guardar Foto</button>
+                <button type="button" class="btn-cancel" onclick="window.history.back()">Cancelar</button>
+            </div>
+
+            <div id="message" class="message"></div>
+        </form>
+    </div>
+
+    <script>
+        // Preview de imagen
+        document.getElementById('image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const preview = document.getElementById('preview');
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Establecer fecha actual por defecto
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Envío del formulario
+        document.getElementById('photoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const form = new FormData(this);
+            const imageFile = form.get('image');
+            
+            // Crear objeto de foto
+            const photo = {
+                title: form.get('title'),
+                description: form.get('description'),
+                date: form.get('date'),
+                alt: form.get('alt') || form.get('title'),
+                image: null // Se llenará con el nombre del archivo
+            };
+
+            try {
+                // Convertir imagen a base64 para guardar
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    // Guardar foto en localStorage
+                    let photos = JSON.parse(localStorage.getItem('portfolio-photos') || '[]');
+                    
+                    // Crear nombre único para el archivo
+                    const timestamp = new Date().getTime();
+                    const fileName = `foto-${timestamp}.json`;
+                    
+                    photo.image = `/images/${fileName.replace('.json', '.jpg')}`;
+                    photo.fileName = fileName;
+                    
+                    photos.push(photo);
+                    localStorage.setItem('portfolio-photos', JSON.stringify(photos));
+
+                    // Mostrar mensaje de éxito
+                    const message = document.getElementById('message');
+                    message.textContent = '✓ Foto agregada exitosamente. Recarga la página principal para ver los cambios.';
+                    message.className = 'message success';
+                    message.style.display = 'block';
+
+                    // Limpiar formulario
+                    setTimeout(() => {
+                        document.getElementById('photoForm').reset();
+                        document.getElementById('preview').style.display = 'none';
+                    }, 1000);
+                };
+                reader.readAsDataURL(imageFile);
+
+            } catch (error) {
+                const message = document.getElementById('message');
+                message.textContent = '✗ Error: ' + error.message;
+                message.className = 'message error';
+                message.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

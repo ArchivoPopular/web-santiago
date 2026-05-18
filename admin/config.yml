@@ -1,17 +1,23 @@
 backend:
-  name: git-gateway
-  branch: main # O el nombre de tu rama de GitHub (usualmente main o master)
+  name: test-repo
 
-media_folder: "fotos" # La carpeta donde se van a guardar tus imágenes
-public_folder: "fotos"
+media_folder: "images"
+public_folder: "/images"
 
 collections:
   - name: "portfolio"
-    label: "Mis Fotos"
-    folder: "contenido" # Creá una carpeta llamada 'contenido' al lado de tu index.html
+    label: "Portfolio"
+    label_singular: "Foto"
+    folder: "_data"
+    extension: "json"
+    format: "json"
     create: true
     slug: "{{slug}}"
+    identifier_field: "title"
+    summary: "{{title}} - {{date}}"
     fields:
-      - { label: "Título de la foto", name: "title", widget: "string" }
-      - { label: "Fecha", name: "date", widget: "datetime" }
-      - { label: "Imagen", name: "image", widget: "image" }
+      - { label: "Título", name: "title", widget: "string" }
+      - { label: "Descripción", name: "description", widget: "text" }
+      - { label: "Fecha", name: "date", widget: "datetime", format: "YYYY-MM-DD" }
+      - { label: "Imagen", name: "image", widget: "image", media_library: { config: { max_file_size: 5000000 } } }
+      - { label: "Alt Text", name: "alt", widget: "string" }

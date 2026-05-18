@@ -129,6 +129,160 @@
             color: #fff;
         }
 
+        /* Estilos para el panel admin */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .admin-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-panel {
+            background: var(--surface-strong);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .admin-panel h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: rgba(255, 0, 0, 0.08);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .preview-image {
+            margin-top: 1rem;
+            max-width: 100%;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-admin {
+            flex: 1;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.25s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-save-photo {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        .btn-save-photo:hover {
+            background: #cc0000;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .message-admin {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .message-admin.success {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .message-admin.error {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.25s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--accent-color);
+        }
+
         .hero {
             padding: 3.5rem 0 6rem;
         }
@@ -465,25 +619,8 @@
 
             <section>
                 <h3 class="section-title" id="portfolio">Proyectos Seleccionados</h3>
-                <div class="gallery">
-                    <div class="gallery-item">
-                        <img src="./images/foto1.jpg" alt="Fotografía Documental - Santiago Ares" loading="lazy">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="./images/foto2.jpg" alt="Fotografía Escénica - Santiago Ares" loading="lazy">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="./images/foto3.jpg" alt="Retrato Urbano - Santiago Ares" loading="lazy">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="./images/foto4.jpg" alt="Fotografía de Eventos - Santiago Ares" loading="lazy">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="./images/foto5.jpg" alt="Fotografía Artística - Santiago Ares" loading="lazy">
-                    </div>
-                    <div class="gallery-item">
-                        <img src="./images/foto6.jpg" alt="Fotografía de Paisaje - Santiago Ares" loading="lazy">
-                    </div>
+                <div class="gallery" id="gallery-container">
+                    <!-- Las imágenes se cargarán dinámicamente aquí -->
                 </div>
             </section>
 
@@ -554,6 +691,238 @@
             </div>
         </footer>
     </div>
+
+    <!-- Modal de Admin -->
+    <div id="adminModal" class="admin-modal">
+        <div class="admin-panel">
+            <button class="close-btn" onclick="closeAdminModal()">✕</button>
+            
+            <div id="loginForm">
+                <h2>Acceso Admin</h2>
+                <div class="form-group">
+                    <label for="adminPassword">Contraseña</label>
+                    <input type="password" id="adminPassword" placeholder="Ingresa la contraseña">
+                </div>
+                <button class="btn-admin btn-save-photo" onclick="loginAdmin()">Entrar</button>
+                <div id="loginMessage" class="message-admin"></div>
+            </div>
+
+            <div id="uploadForm" style="display: none;">
+                <h2>Subir Nueva Foto</h2>
+                <div class="form-group">
+                    <label for="photoTitle">Título</label>
+                    <input type="text" id="photoTitle" placeholder="Título de la foto">
+                </div>
+
+                <div class="form-group">
+                    <label for="photoDescription">Descripción</label>
+                    <textarea id="photoDescription" placeholder="Describe tu foto..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="photoDate">Fecha</label>
+                    <input type="date" id="photoDate">
+                </div>
+
+                <div class="form-group">
+                    <label for="photoImage">Imagen</label>
+                    <input type="file" id="photoImage" accept="image/*">
+                    <img id="previewImage" class="preview-image" alt="Vista previa">
+                </div>
+
+                <div class="form-group">
+                    <label for="photoAlt">Texto alternativo (SEO)</label>
+                    <input type="text" id="photoAlt" placeholder="Ej: Fotografía de evento - Santiago Ares">
+                </div>
+
+                <div class="admin-actions">
+                    <button class="btn-admin btn-save-photo" onclick="uploadPhoto()">Subir Foto</button>
+                    <button class="btn-admin btn-logout" onclick="logoutAdmin()">Salir</button>
+                </div>
+
+                <div id="uploadMessage" class="message-admin"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = "admin123"; // Cambiar a una contraseña segura
+
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.add('active');
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('uploadForm').style.display = 'none';
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginMessage').style.display = 'none';
+        }
+
+        function loginAdmin() {
+            const password = document.getElementById('adminPassword').value;
+            const message = document.getElementById('loginMessage');
+
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('uploadForm').style.display = 'block';
+                setupPhotoForm();
+            } else {
+                message.textContent = '✗ Contraseña incorrecta';
+                message.className = 'message-admin error';
+                message.style.display = 'block';
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('uploadForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('adminPassword').value = '';
+            resetPhotoForm();
+        }
+
+        function setupPhotoForm() {
+            // Establecer fecha actual por defecto
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('photoDate').value = today;
+
+            // Preview de imagen
+            document.getElementById('photoImage').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const preview = document.getElementById('previewImage');
+                        preview.src = event.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function resetPhotoForm() {
+            document.getElementById('photoTitle').value = '';
+            document.getElementById('photoDescription').value = '';
+            document.getElementById('photoAlt').value = '';
+            document.getElementById('photoImage').value = '';
+            document.getElementById('previewImage').style.display = 'none';
+            document.getElementById('uploadMessage').style.display = 'none';
+        }
+
+        async function uploadPhoto() {
+            const title = document.getElementById('photoTitle').value;
+            const description = document.getElementById('photoDescription').value;
+            const date = document.getElementById('photoDate').value;
+            const imageFile = document.getElementById('photoImage').files[0];
+            const alt = document.getElementById('photoAlt').value || title;
+            const message = document.getElementById('uploadMessage');
+
+            if (!title || !imageFile || !date) {
+                message.textContent = '✗ Por favor completa todos los campos requeridos';
+                message.className = 'message-admin error';
+                message.style.display = 'block';
+                return;
+            }
+
+            try {
+                // Convertir imagen a base64
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const imageData = event.target.result;
+
+                    // Crear objeto de foto
+                    const photo = {
+                        title,
+                        description,
+                        date,
+                        alt,
+                        image: imageData, // Guardar en base64
+                        timestamp: new Date().getTime()
+                    };
+
+                    // Guardar en localStorage
+                    let photos = JSON.parse(localStorage.getItem('portfolio-photos') || '[]');
+                    photos.unshift(photo); // Agregar al inicio
+                    localStorage.setItem('portfolio-photos', JSON.stringify(photos));
+
+                    // Mostrar mensaje de éxito
+                    message.textContent = '✓ Foto subida exitosamente';
+                    message.className = 'message-admin success';
+                    message.style.display = 'block';
+
+                    // Recargar galería
+                    loadGallery();
+
+                    // Limpiar formulario
+                    setTimeout(() => {
+                        resetPhotoForm();
+                    }, 1500);
+                };
+                reader.readAsDataURL(imageFile);
+
+            } catch (error) {
+                message.textContent = '✗ Error: ' + error.message;
+                message.className = 'message-admin error';
+                message.style.display = 'block';
+            }
+        }
+
+        // Agregar evento al botón Admin
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminBtn = document.querySelector('.admin-btn');
+            if (adminBtn) {
+                adminBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openAdminModal();
+                });
+            }
+        });
+
+        async function loadGallery() {
+            const galleryContainer = document.getElementById('gallery-container');
+            let photos = [];
+
+            // Primero intentar cargar fotos guardadas en localStorage
+            try {
+                const savedPhotos = JSON.parse(localStorage.getItem('portfolio-photos') || '[]');
+                photos.push(...savedPhotos);
+            } catch (e) {
+                console.error('Error cargando fotos guardadas:', e);
+            }
+
+            // Si no hay fotos guardadas, usar imágenes por defecto
+            if (photos.length === 0) {
+                const defaultPhotos = [
+                    { title: 'Fotografía Documental', image: './images/foto1.jpg', alt: 'Fotografía Documental - Santiago Ares', date: '2024-05-18' },
+                    { title: 'Fotografía Escénica', image: './images/foto2.jpg', alt: 'Fotografía Escénica - Santiago Ares', date: '2024-05-17' },
+                    { title: 'Retrato Urbano', image: './images/foto3.jpg', alt: 'Retrato Urbano - Santiago Ares', date: '2024-05-16' },
+                    { title: 'Fotografía de Eventos', image: './images/foto4.jpg', alt: 'Fotografía de Eventos - Santiago Ares', date: '2024-05-15' },
+                    { title: 'Fotografía Artística', image: './images/foto5.jpg', alt: 'Fotografía Artística - Santiago Ares', date: '2024-05-14' },
+                    { title: 'Fotografía de Paisaje', image: './images/foto6.jpg', alt: 'Fotografía de Paisaje - Santiago Ares', date: '2024-05-13' }
+                ];
+                photos.push(...defaultPhotos);
+            }
+
+            // Ordenar por fecha descendente
+            photos.sort((a, b) => {
+                const dateA = new Date(a.date || 0);
+                const dateB = new Date(b.date || 0);
+                return dateB - dateA;
+            });
+
+            // Generar HTML de la galería
+            galleryContainer.innerHTML = photos.map(photo => `
+                <div class="gallery-item">
+                    <img src="${photo.image}" alt="${photo.alt}" loading="lazy">
+                </div>
+            `).join('');
+        }
+
+        // Cargar galería cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', loadGallery);
+    </script>
 
 </body>
 </html>
