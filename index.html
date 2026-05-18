@@ -429,122 +429,58 @@
             margin: 6rem 0;
         }
 
-        .carousel-container {
+        .instagram-feed-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .instagram-feed-item {
             position: relative;
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
             overflow: hidden;
-            border-radius: 20px;
+            border-radius: 12px;
             aspect-ratio: 1;
             background: var(--surface);
             border: 1px solid var(--border);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .carousel-wrapper {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        .instagram-feed-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
         }
 
-        .carousel-item {
-            flex: 0 0 100%;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .carousel-item img {
+        .instagram-feed-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .carousel-overlay {
+        .instagram-feed-overlay {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-            padding: 2rem 1rem 1rem;
-            color: white;
-            text-align: center;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
 
-        .carousel-item:hover .carousel-overlay {
+        .instagram-feed-item:hover .instagram-feed-overlay {
             opacity: 1;
         }
 
-        .carousel-overlay p {
-            font-size: 0.9rem;
-            font-weight: 300;
-        }
-
-        .carousel-controls {
-            position: absolute;
-            bottom: 1rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 0.5rem;
-            z-index: 10;
-        }
-
-        .carousel-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-        }
-
-        .carousel-dot.active {
-            background: var(--accent-color);
-            width: 24px;
-            border-radius: 4px;
-            border-color: var(--accent-color);
-        }
-
-        .carousel-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
+        .instagram-feed-stat {
             display: flex;
             align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            z-index: 5;
-            backdrop-filter: blur(10px);
-        }
-
-        .carousel-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .carousel-btn-prev {
-            left: 1rem;
-        }
-
-        .carousel-btn-next {
-            right: 1rem;
+            gap: 0.3rem;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .instagram-link {
@@ -717,22 +653,9 @@
                 font-size: 0.7rem;
             }
 
-            .carousel-container {
-                max-width: 100%;
-            }
-
-            .carousel-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-            }
-
-            .carousel-btn-prev {
-                left: 0.5rem;
-            }
-
-            .carousel-btn-next {
-                right: 0.5rem;
+            .instagram-feed-container {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
             }
 
             .hero {
@@ -803,16 +726,7 @@
 
             <section class="instagram-carousel">
                 <h3 class="section-title">En Instagram</h3>
-                <div class="carousel-container">
-                    <div class="carousel-wrapper" id="carouselWrapper">
-                        <!-- Los items se cargarán dinámicamente -->
-                    </div>
-                    <button class="carousel-btn carousel-btn-prev" onclick="prevSlide()">❮</button>
-                    <button class="carousel-btn carousel-btn-next" onclick="nextSlide()">❯</button>
-                    <div class="carousel-controls" id="carouselControls">
-                        <!-- Los dots se cargarán dinámicamente -->
-                    </div>
-                </div>
+                <div id="instagram-feed-container" class="instagram-feed-container"></div>
                 <div class="instagram-link">
                     <a href="https://www.instagram.com/ph.ares/" target="_blank" rel="noreferrer">
                         📸 Seguir @ph.ares
@@ -1104,102 +1018,97 @@
             `).join('');
         }
 
+
         // Cargar galería cuando el DOM esté listo
-        let currentSlide = 0;
-        let carouselPhotos = [];
 
-        function initCarousel() {
-            // Usar todas las fotos disponibles
-            carouselPhotos = [];
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGallery();
+            initInstagramFeed();
+        });
 
-            // Agregar fotos guardadas
+        // Cargar feed de Instagram
+        function initInstagramFeed() {
+            // Obtener el feed de Instagram usando Instafeed.js
+            // Nota: Requiere Access Token válido
+            const accessToken = 'YOUR_INSTAGRAM_ACCESS_TOKEN'; // Necesitas obtener esto
+            
+            // Si no tienes token, mostrar posts hardcodeados como ejemplo
+            loadInstagramFallback();
+        }
+
+        function loadInstagramFallback() {
+            // Posts de ejemplo (puedes reemplazarlos con posts reales de tu Instagram)
+            const instagramPosts = [
+                {
+                    image: './images/foto1.jpg',
+                    link: 'https://www.instagram.com/ph.ares/',
+                    likes: 342,
+                    comments: 28
+                },
+                {
+                    image: './images/foto2.jpg',
+                    link: 'https://www.instagram.com/ph.ares/',
+                    likes: 456,
+                    comments: 35
+                },
+                {
+                    image: './images/foto3.jpg',
+                    link: 'https://www.instagram.com/ph.ares/',
+                    likes: 289,
+                    comments: 18
+                },
+                {
+                    image: './images/foto4.jpg',
+                    link: 'https://www.instagram.com/ph.ares/',
+                    likes: 567,
+                    comments: 42
+                },
+                {
+                    image: './images/foto5.jpg',
+                    link: 'https://www.instagram.com/ph.ares/',
+                    likes: 423,
+                    comments: 31
+                },
+                {
+                    image: './images/foto6.jpg',
+                    link: 'https://www.instagram.com/ph.ares/',
+                    likes: 378,
+                    comments: 25
+                }
+            ];
+
+            // Intentar cargar posts guardados primero
             try {
                 const savedPhotos = JSON.parse(localStorage.getItem('portfolio-photos') || '[]');
-                carouselPhotos.push(...savedPhotos);
+                if (savedPhotos.length > 0) {
+                    savedPhotos.forEach(photo => {
+                        instagramPosts.unshift({
+                            image: photo.image,
+                            link: 'https://www.instagram.com/ph.ares/',
+                            likes: Math.floor(Math.random() * 500) + 100,
+                            comments: Math.floor(Math.random() * 50) + 5
+                        });
+                    });
+                }
             } catch (e) {
                 console.error('Error cargando fotos guardadas:', e);
             }
 
-            // Agregar fotos por defecto
-            const defaultPhotos = [
-                { title: 'Fotografía Documental', image: './images/foto1.jpg', alt: 'Fotografía Documental - Santiago Ares', description: 'Narrativa visual' },
-                { title: 'Fotografía Escénica', image: './images/foto2.jpg', alt: 'Fotografía Escénica - Santiago Ares', description: 'Cobertura escénica' },
-                { title: 'Retrato Urbano', image: './images/foto3.jpg', alt: 'Retrato Urbano - Santiago Ares', description: 'Retrato y composición' },
-                { title: 'Fotografía de Eventos', image: './images/foto4.jpg', alt: 'Fotografía de Eventos - Santiago Ares', description: 'Cobertura de eventos' },
-                { title: 'Fotografía Artística', image: './images/foto5.jpg', alt: 'Fotografía Artística - Santiago Ares', description: 'Fotografía artística' },
-                { title: 'Fotografía de Paisaje', image: './images/foto6.jpg', alt: 'Fotografía de Paisaje - Santiago Ares', description: 'Paisaje y naturaleza' }
-            ];
-
-            if (carouselPhotos.length === 0) {
-                carouselPhotos = defaultPhotos;
-            } else {
-                carouselPhotos = carouselPhotos.concat(defaultPhotos);
-            }
-
-            renderCarousel();
-        }
-
-        function renderCarousel() {
-            if (carouselPhotos.length === 0) return;
-
-            const wrapper = document.getElementById('carouselWrapper');
-            const controls = document.getElementById('carouselControls');
-
-            // Renderizar items
-            wrapper.innerHTML = carouselPhotos.map((photo, index) => `
-                <div class="carousel-item">
-                    <img src="${photo.image}" alt="${photo.alt}" loading="lazy">
-                    <div class="carousel-overlay">
-                        <p>${photo.description || photo.title}</p>
+            const container = document.getElementById('instagram-feed-container');
+            container.innerHTML = instagramPosts.slice(0, 6).map(post => `
+                <a href="${post.link}" target="_blank" rel="noreferrer" class="instagram-feed-item">
+                    <img src="${post.image}" alt="Post de Instagram" loading="lazy">
+                    <div class="instagram-feed-overlay">
+                        <div class="instagram-feed-stat">
+                            <span>❤️ ${post.likes}</span>
+                        </div>
+                        <div class="instagram-feed-stat">
+                            <span>💬 ${post.comments}</span>
+                        </div>
                     </div>
-                </div>
+                </a>
             `).join('');
-
-            // Renderizar dots
-            controls.innerHTML = carouselPhotos.map((_, index) => `
-                <div class="carousel-dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></div>
-            `).join('');
-
-            updateCarouselPosition();
         }
-
-        function updateCarouselPosition() {
-            const wrapper = document.getElementById('carouselWrapper');
-            wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
-
-            // Actualizar dots
-            document.querySelectorAll('.carousel-dot').forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentSlide);
-            });
-        }
-
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % carouselPhotos.length;
-            updateCarouselPosition();
-        }
-
-        function prevSlide() {
-            currentSlide = (currentSlide - 1 + carouselPhotos.length) % carouselPhotos.length;
-            updateCarouselPosition();
-        }
-
-        function goToSlide(index) {
-            currentSlide = index;
-            updateCarouselPosition();
-        }
-
-        // Auto-play del carrusel cada 5 segundos
-        setInterval(() => {
-            const carousel = document.getElementById('carouselWrapper');
-            if (carousel && carousel.parentElement.parentElement.offsetParent !== null) {
-                nextSlide();
-            }
-        }, 5000);
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadGallery();
-            initCarousel();
-        });
     </script>
 
 </body>
